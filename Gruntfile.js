@@ -118,7 +118,11 @@ module.exports = function (grunt) {
           src: [
             '.tmp',
             '<%= config.dist %>/*',
-            '!<%= config.dist %>/.git*'
+            '!<%= config.dist %>/.git{,*/}*',
+            '!<%= config.dist %>/Procfile',
+            '!<%= config.dist %>/package.json',
+            '!<%= config.dist %>/web.js',
+            '!<%= config.dist %>/node_modules'
           ]
         }]
       },
@@ -377,9 +381,25 @@ module.exports = function (grunt) {
         'imagemin',
         'svgmin'
       ]
+    },
+
+    buildcontrol: {
+      options: {
+          dir: 'dist',
+          commit: true,
+          push: true,
+          message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
+      },
+      heroku: {
+          options: {
+              remote: 'https://git.heroku.com/famous-demo.git',
+              branch: 'master'
+          }
+      }
     }
   });
 
+  grunt.registerTask('deploy', ['buildcontrol']);
 
   grunt.registerTask('serve', 'start the server and preview your app, --allow-remote for remote access', function (target) {
     if (grunt.option('allow-remote')) {
